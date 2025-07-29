@@ -1,7 +1,11 @@
 import { ViteRouter } from '@bracketed/vite-plugin-router';
+import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
 import url from 'node:url';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { UserConfig } from 'vite';
+import checker from 'vite-plugin-checker';
+import viteCompression from 'vite-plugin-compression';
 import svgr from 'vite-plugin-svgr';
 
 // https://vite.dev/config/
@@ -15,37 +19,28 @@ export default {
 	plugins: [
 		react(),
 		svgr(),
+		tailwindcss(),
+		visualizer(),
+		viteCompression(),
+		checker({
+			typescript: true,
+		}),
 		new ViteRouter({
 			dir: 'src/pages',
 			output: 'src/Router.tsx',
 			onRoutesGenerated: (r) => undefined,
 		}).affix(),
 	],
+	css: {
+		modules: {
+			generateScopedName: '[hash:base64:48]',
+		},
+	},
 	resolve: {
 		alias: [
 			{
 				find: '@',
-				replacement: url.fileURLToPath(new URL('.', import.meta.url)),
-			},
-			{
-				find: '@src',
 				replacement: url.fileURLToPath(new URL('./src', import.meta.url)),
-			},
-			{
-				find: '@components',
-				replacement: url.fileURLToPath(new URL('./src/components', import.meta.url)),
-			},
-			{
-				find: '@pages',
-				replacement: url.fileURLToPath(new URL('./src/pages', import.meta.url)),
-			},
-			{
-				find: '@css',
-				replacement: url.fileURLToPath(new URL('./src/css', import.meta.url)),
-			},
-			{
-				find: '@content',
-				replacement: url.fileURLToPath(new URL('./src/content', import.meta.url)),
 			},
 		],
 	},
